@@ -4,6 +4,26 @@ using System.Formats.Asn1;
 using System.Linq;
 using System.Threading.Tasks;
 
+/*
+    REQUERIMIENTOS
+        1) Indicar en el error lexico o sintactico el numero de linea y caracter
+        2) En el log colocar el nombre del archivo a compilar, la fecha y la hora
+            Ejemplo
+                Programa: Prueba.cpp
+                Fecha: 11/11/2024
+                Hora: 15:29
+        3) Agregar el resto de asiganciones:
+            id = Expresion
+            id++
+            id--
+            id IncrementoTermino Expresion
+            id IncrementoFactor Expresion
+            id = Console.Read();
+            id = Console.ReadLine();
+        4) Emular el Console.Write() y Console.WriteLine()
+        5) Emular el Console.Read() y Console.ReadLine();
+*/
+
 namespace Sintaxis_1 {
     public class Lenguaje : Sintaxis {
         public Lenguaje() : base() {
@@ -72,8 +92,11 @@ namespace Sintaxis_1 {
         //BloqueInstrucciones -> { listaIntrucciones? }
         private void BloqueInstrucciones() {
             match("{");
-            ListaInstrucciones();
-            match("}");
+            if (getContenido() != "}") {
+                ListaInstrucciones();
+            } else {
+                match("}");
+            }
         }
 
         //ListaInstrucciones -> Instruccion ListaInstrucciones?
@@ -82,6 +105,8 @@ namespace Sintaxis_1 {
 
             if (getContenido() != "}") {
                 ListaInstrucciones();
+            } else {
+                match("}");
             }
         }
 
@@ -101,15 +126,16 @@ namespace Sintaxis_1 {
                 Variables();
             } else {
                 Asignacion();
+                match(";");
             }
         }
         
-        //Asignacion -> Identificador = Expresion;
+        //Asignacion -> Identificador = Expresion | id++ | id-- | id =  IncTermino expresion |
+                                      //
         private void Asignacion() {
             match(Tipos.Identificador);
             match("=");
             Expresion();
-            match(";");
         }
 
         //If -> if (Condicion) bloqueInstrucciones | instruccion
@@ -161,18 +187,54 @@ namespace Sintaxis_1 {
                 //bloqueInstrucciones | intruccion 
                 //while(Condicion);
         private void Do() {
-            
+            match("do");
+
+            if (getContenido() == "{") {
+                BloqueInstrucciones();
+            } else {
+                Instruccion();
+            }
+
+            match("while");
+            match("(");
+            Condicion();
+            match(")");
+            match(";");
         }
         
         //For -> for(Asignacion; Condicion; Asignacion) 
                //BloqueInstrucciones | Intruccion
         private void For() {
-            
+            match("for");
+            match("(");
+            Asignacion();
+            match(";");
+            Condicion();
+            match(";");
+            Asignacion();
+            match(")");
+
+            if (getContenido() == "{") {
+                BloqueInstrucciones();
+            } else {
+                Instruccion();
+            }
         }
 
         //Console -> Console.(WriteLine|Write) (cadena concatenaciones?);
         private void Console() {
+            match("Console");
+            match(".");
+            if (getContenido() == "WriteLine") {
+                match("WriteLine");
+            } else if (getContenido() == "Write") {
+                match("Write");
+            }
+            match("(");
+            match(Tipos.Cadena);
             
+            match(")");
+            match(";");
         }
         
         //Main      -> static void Main(string[] args) BloqueInstrucciones 

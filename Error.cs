@@ -7,7 +7,7 @@ using System.IO;
 namespace Sintaxis_1 {
     public class Error : Exception
     {
-        public Error(string message) : base("Error " + message) { }
+        public Error(string message, int line) : base("Error " + message +"en linea " + line) { }
         public Error(string message, StreamWriter logger) : base("Error " + message) {
             logger.WriteLine("Error " + message);
         }

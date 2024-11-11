@@ -23,6 +23,7 @@ namespace Sintaxis_1 {
             OperadorLogico,
             Cadena,
             TipoDato,
+            PalabraReservada,
         }
         private String contenido;
         private Tipos clasificacion;

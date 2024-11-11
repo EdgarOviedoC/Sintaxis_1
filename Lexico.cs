@@ -261,6 +261,13 @@ namespace Sintaxis_1 {
                         case "float":
                             setClasificacion(Tipos.TipoDato);
                             break;
+                        case "if":
+                        case "else":
+                        case "do":
+                        case "while":
+                        case "for":
+                            setClasificacion(Tipos.PalabraReservada);
+                            break;
                     }
                 }    
                 if (!finArchivo()) {
