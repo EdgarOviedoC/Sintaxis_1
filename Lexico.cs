@@ -4,15 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using System.Linq.Expressions;
+using Microsoft.VisualBasic;
 
 namespace Sintaxis_1 {
     public class Lexico : Token,  IDisposable {
         const int F = -1;
         const int E = -2;
-        int line = 1;
+        protected int line = 1;
         protected StreamReader archivo;
         protected StreamWriter log;
         protected StreamWriter asm;
+
         int[,] TRAND = {
             {  0,  1,  2, 33,  1, 12, 14,  8,  9, 10, 11, 23, 16, 16, 18, 20, 21, 26, 25, 27, 29, 32, 34,  0,  F, 33  },
             {  F,  1,  1,  F,  1,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F,  F  },
@@ -68,10 +70,9 @@ namespace Sintaxis_1 {
             }
         }
         //Constructor sobrecargado
-        public Lexico(string nombreArchivo) {
+        public Lexico(string nombreArchivo) { 
             log = new StreamWriter(Path.ChangeExtension(nombreArchivo,  ".log"));
             log.AutoFlush = true;
-
 
             if (File.Exists(Path.ChangeExtension(nombreArchivo,  ".cpp"))) {
                 archivo = new StreamReader(nombreArchivo);
@@ -85,6 +86,8 @@ namespace Sintaxis_1 {
             } else {
                 throw new Error("El archivo tiene extension invalida",  log);
             }
+            log.WriteLine("Programa: {0}", nombreArchivo);
+            fechaHora();
         }
         //Destructor de la clase lexico
         public void Dispose() {
@@ -218,11 +221,6 @@ namespace Sintaxis_1 {
 
             while (estado >= 0) {
 
-                if (estado == 0)
-                {
-                    Buffer = "";
-                }
-
                 c = (char)archivo.Peek();
                 estado = TRAND[estado,  columna(c)];
                 clasificacion(estado);
@@ -241,41 +239,56 @@ namespace Sintaxis_1 {
             }
             if (estado == E) {
                 String mensaje;
-                    if (getClasificacion() == Tipos.Numero) {
-                        mensaje ="Lexico, Se espera un digito";
-                    } else if (getClasificacion() == Tipos.Cadena) {
-                        mensaje = "Lexico, Se esperaban comillas";
-                    } else if (getClasificacion() == Tipos.Caracter) {
-                        mensaje = "Lexico, Se esperaba una comilla";
-                    } else {
-                        mensaje = "Lexico, Se esperaba cierre de comentario";
-                    }
-                    throw new Error(mensaje, log, line);
-                }
-                setContenido(Buffer);
 
-                if (getClasificacion() == Tipos.Identificador) {
-                    switch(getContenido()) {
-                        case "char":
-                        case "int":
-                        case "float":
-                            setClasificacion(Tipos.TipoDato);
-                            break;
-                        case "if":
-                        case "else":
-                        case "do":
-                        case "while":
-                        case "for":
-                            setClasificacion(Tipos.PalabraReservada);
-                            break;
-                    }
-                }    
-                if (!finArchivo()) {
-                    log.WriteLine("{0}  °°°°  {1}",  getContenido(),  getClasificacion());
+                if (getClasificacion() == Tipos.Numero) {
+                    mensaje ="Lexico, Se espera un digito";
+                } else if (getClasificacion() == Tipos.Cadena) {
+                    mensaje = "Lexico, Se esperaban comillas";
+                } else if (getClasificacion() == Tipos.Caracter) {
+                    mensaje = "Lexico, Se esperaba una comilla";
+                } else {
+                    mensaje = "Lexico, Se esperaba cierre de comentario";
                 }
+                throw new Error(mensaje, log, line);
+            }
+            
+            setContenido(Buffer);
+
+            if (getClasificacion() == Tipos.Identificador) {
+                switch(getContenido()) {
+                    case "char":
+                    case "int":
+                    case "float":
+                        setClasificacion(Tipos.TipoDato);
+                        break;
+                    case "if":
+                    case "else":
+                    case "do":
+                    case "while":
+                    case "for":
+                        setClasificacion(Tipos.PalabraReservada);
+                        break;
+                }
+            }    
+            if (!finArchivo()) {
+                log.WriteLine("{0}  °°°°  {1}",  getContenido(),  getClasificacion());
+            }
         }
         public bool finArchivo() {
             return archivo.EndOfStream;
+        }
+        public void fechaHora() {
+            DateTime fechaHoraActual = DateTime.Now;
+        
+            int year = fechaHoraActual.Year;
+            int month = fechaHoraActual.Month;
+            int day = fechaHoraActual.Day;
+
+            int hour = fechaHoraActual.Hour; 
+            int minute = fechaHoraActual.Minute;
+
+            log.WriteLine("Fecha: {0}/{1}/{2}", day, month, year);
+            log.WriteLine("Hora: {0}:{1}", hour, minute);
         }
     }
 }

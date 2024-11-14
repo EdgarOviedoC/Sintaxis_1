@@ -7,12 +7,12 @@ using System.IO;
 namespace Sintaxis_1 {
     public class Error : Exception
     {
-        public Error(string message, int line) : base("Error " + message +"en linea " + line) { }
-        public Error(string message, StreamWriter logger) : base("Error " + message) {
-            logger.WriteLine("Error " + message);
+        public Error(string message, int line) : base( message +" en linea " + line) { }
+        public Error(string message, StreamWriter log) : base("Error " + message) {
+            log.WriteLine("Error " + message);
         }
-        public Error(string message, StreamWriter logger, int line) : base("Error: " + message + " on line " + line) {
-            logger.WriteLine("Error: " + message + " on line " + line);
+        public Error(string message, StreamWriter log, int line) : base("Error: " + message + " on line " + line) {
+            log.WriteLine("Error: " + message + " on line " + line);
         }
     }
 }

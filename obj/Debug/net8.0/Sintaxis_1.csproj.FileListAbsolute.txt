@@ -12,3 +12,4 @@ C:\Users\hevi-\Desktop\Lenguajes y automatas I\Sintaxis_1\obj\Debug\net8.0\refin
 C:\Users\hevi-\Desktop\Lenguajes y automatas I\Sintaxis_1\obj\Debug\net8.0\Sintaxis_1.pdb
 C:\Users\hevi-\Desktop\Lenguajes y automatas I\Sintaxis_1\obj\Debug\net8.0\Sintaxis_1.genruntimeconfig.cache
 C:\Users\hevi-\Desktop\Lenguajes y automatas I\Sintaxis_1\obj\Debug\net8.0\ref\Sintaxis_1.dll
+C:\Users\hevi-\Desktop\Lenguajes y automatas I\Sintaxis_1\obj\Debug\net8.0\Sintaxis_1.sourcelink.json

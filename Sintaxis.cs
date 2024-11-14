@@ -15,14 +15,14 @@ namespace Sintaxis_1 {
             if (contenido == getContenido()) {
                 nexToken();
             } else {
-                throw new Error("Sintaxis: se espera un " + contenido);
+                throw new Error("Sintaxis: se espera un " + contenido, line);
             }
         }
         public void match(Tipos clasificacion) {
             if (clasificacion == getClasificacion()) {
                 nexToken();
             } else {
-                throw new Error("Sintaxis: se esperaba " + clasificacion);
+                throw new Error("Sintaxis: se esperaba " + clasificacion, line);
             }
         }
     }
