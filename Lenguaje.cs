@@ -254,44 +254,50 @@ namespace Sintaxis_1 {
 
         //console -> console.(WriteLine|Write) (cadena concatenaciones?);
         private void console() {
-            int tipo;
-            String contenido = "";
+            String tipoWrite,
+                   texto = "";
 
             match("Console");
             match(".");
             
             if (getContenido() == "Write") {
-                tipo = 1;
+                tipoWrite = "Write";
                 match("Write");
             } else {
-                tipo = 2;
+                tipoWrite = "WriteLine";
                 match("WriteLine");
             } 
            
             match("(");
-            
-            contenido = getContenido().Trim('"');
 
-            if (getClasificacion() == Tipos.Cadena) {
-                match(Tipos.Cadena);
+            if (tipoWrite == "WriteLine" && getContenido() == ")") {
+                match(")");
+                match(";");
+                Console.WriteLine();
             } else {
-                match(Tipos.Identificador);
-            }
-            
-            if (getContenido() == "+" || getContenido() == ",") {
-                //concatenaciones();
-            }
+                texto = getContenido().Trim('"');
 
-            match(")");
-            match(";");
+                if (getClasificacion() == Tipos.Cadena) {
+                    match(Tipos.Cadena);
+                } else {
+                    match(Tipos.Identificador);
+                }
 
-            if (tipo == 1) {
-                Console.Write(contenido);
-            } else  {
-                Console.WriteLine(contenido);
+                if (getContenido() == "+" || getContenido() == ",") {
+                    //concatenaciones();
+                }
+
+                match(")");
+                match(";");
+
+                if (tipoWrite == "Write") {
+                    Console.Write(texto);
+                } else {
+                    Console.WriteLine(texto);
+                }
             }
         }
-        
+
         //Main      -> static void Main(string[] args) BloqueInstrucciones 
         private void Main() {
             match("static");
@@ -311,6 +317,7 @@ namespace Sintaxis_1 {
             Termino();
             MasTermino();
         }
+        
         //MasTermino -> (OperadorTermino Termino)?
         private void MasTermino() {
             if (getClasificacion() == Tipos.OperadorTermino) {
@@ -318,11 +325,13 @@ namespace Sintaxis_1 {
                 Termino();
             }
         }
+        
         //Termino -> Factor PorFactor
         private void Termino() {
             Factor();
             PorFactor();
         }
+        
         //PorFactor -> (OperadorFactor Factor)?
         private void PorFactor() {
             if (getClasificacion() == Tipos.OperadorFactor) {
@@ -330,6 +339,7 @@ namespace Sintaxis_1 {
                 Factor();
             }
         }
+        
         //Factor -> numero | identificador | (Expresion)
         private void Factor() {
             if (getClasificacion() == Tipos.Numero) {
