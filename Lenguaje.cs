@@ -6,36 +6,45 @@ using System.Threading.Tasks;
 
 /*
     - REQUERIMIENTOS -
-        [ 1) Indicar el error lexico o sintactico el numero de linea y caracter  ]
-        -----------------------------------------------------------------------------
-        [ 2) En el log colocar el nombre del archivo a compilar, la fecha y la hora ]
-        [     Ejemplo                                                               ]
-        [         Programa: Prueba.cpp                                              ]
-        [         Fecha: 11/11/2024                                                 ]
-        [         Hora: 15:29                                                       ]
-        -----------------------------------------------------------------------------
-        [ 3) Agregar el resto de asiganciones:                                      ]  
-        [    id = Expresion                                                         ] 
-        [    id++                                                                   ] 
-        [    id--                                                                   ] 
-        [    id IncrementoTermino Expresion                                         ] 
-        [    id IncrementoFactor Expresion                                          ] 
-        [    id = console.Read();                                                   ] 
-        [    id = console.ReadLine();                                               ] 
-        -----------------------------------------------------------------------------                                                  
-        [ 4) Emular el console.Write() y console.WriteLine()                        ]   
-        -----------------------------------------------------------------------------     
-        [ 5) Emular el console.Read() y console.ReadLine();                         ]   
-        -----------------------------------------------------------------------------
+        -----------------------------------------------------------------------------------
+         1) Concatenaciones                                                               
+            Concatenaciones -> Identificador | cadena (+ Concatenaciones)?                
+                                            // sin comillas                                 
+        ------------------------------------------------------------------------------------
+         2) Inicializar una variable                                                       
+            ListaIdentificadores -> identificador (= Expresion)? (, ListaIdentificadores)? 
+        ------------------------------------------------------------------------------------
+         3) Evaluar las expresiones                                                        
+        ------------------------------------------------------------------------------------
+         4) Condicion, Asignacion                                                          
+        ------------------------------------------------------------------------------------
 */
 
 namespace Sintaxis_1 {
     public class Lenguaje : Sintaxis {
+        Stack<float> s;
+        List<Variable> l;
         public Lenguaje() : base() {
-            log.WriteLine("Constructor lenguaje");
+            s = new Stack<float>();
+            l = new List<Variable>();
         }
         public Lenguaje(string name) : base(name) {
-            log.WriteLine("Constructor lenguaje");
+            s = new Stack<float>();
+            l = new List<Variable>();
+        }
+
+        private void DysplayStack() {
+            Console.WriteLine("Contenido del Stack");
+            foreach (float elemento in s) {
+                Console.WriteLine(elemento);
+            }
+        }
+
+        private void DysplayList() {
+            log.WriteLine("Lista de variables");
+            foreach (Variable elemento in l) {
+                log.WriteLine("{0}  {1}  {2}", elemento.getTipoDato(), elemento.getNombre(), elemento.getValor());
+            }
         }
 
         // ? Cerradura epsilon
@@ -49,6 +58,7 @@ namespace Sintaxis_1 {
                 Variables();
             }
             Main();
+            DysplayList();
         }
 
         //Librerias -> using ListaLibrerias; Librerias?
@@ -64,8 +74,15 @@ namespace Sintaxis_1 {
 
         //Variables -> tipo_dato Lista_identificadores; Variables?
         private void Variables() {
+            Variable.TipoDato t = Variable.TipoDato.Char;
+
+            switch (getContenido()) {
+                case "int":   t = Variable.TipoDato.Int; break;
+                case "floar": t = Variable.TipoDato.Float; break;
+            }
+            
             match(Tipos.TipoDato);
-            ListaIdentificadores();
+            ListaIdentificadores(t);
             match(";");
 
             if (getClasificacion() == Tipos.TipoDato) {
@@ -83,20 +100,21 @@ namespace Sintaxis_1 {
             }
         }
 
-        //ListaIdentificadores -> identificador (,ListaIdentificadores)?
-        private void ListaIdentificadores() {
+        //ListaIdentificadores -> identificador (, ListaIdentificadores)?
+        private void ListaIdentificadores(Variable.TipoDato t) {
+            l.Add(new Variable(t, getContenido()));
             match(Tipos.Identificador);
 
             if (getContenido() == ",") {
                 match(",");
-                ListaIdentificadores();
+                ListaIdentificadores(t);
             }
         }
 
         //BloqueInstrucciones -> { listaIntrucciones? }
         private void BloqueInstrucciones() {
             match("{");
-            if (getContenido() != "}") {
+            if (!(getContenido() == "}")) {
                 ListaInstrucciones();
             } else {
                 match("}");
@@ -137,6 +155,7 @@ namespace Sintaxis_1 {
         //Asignacion -> id = Expresion | id++ | id-- | id  IncTermino expresion |                                           
                       //id IncrementoFactor Expresion | id = console.Read() | id = console.ReadLine()
         private void Asignacion() {
+            Console.Write(getContenido() + " = ");
             match(Tipos.Identificador);
 
             if (getContenido() == "=") {
@@ -163,10 +182,16 @@ namespace Sintaxis_1 {
                 if (getContenido() == "++" || getContenido() == "--") {
                     match(Tipos.IncrementoTermino);
                 } else {
-                    match(Tipos.IncrementoTermino);
+                    if (getContenido() == "+=" || getContenido() == "-=") {
+                        match(Tipos.IncrementoTermino);
+                    } else {
+                        match(Tipos.IncrementoFactor);
+                    }
                     Expresion();
                 }
             }
+            Console.WriteLine(" = " + s.Pop());
+            DysplayStack();
         }
 
         //If -> if (Condicion) bloqueInstrucciones | instruccion
@@ -255,7 +280,7 @@ namespace Sintaxis_1 {
         //console -> console.(WriteLine|Write) (cadena concatenaciones?);
         private void console() {
             String tipoWrite,
-                   texto = "";
+                   texto;
 
             match("Console");
             match(".");
@@ -283,17 +308,17 @@ namespace Sintaxis_1 {
                     match(Tipos.Identificador);
                 }
 
-                if (getContenido() == "+" || getContenido() == ",") {
-                    //concatenaciones();
-                }
-
-                match(")");
-                match(";");
-
-                if (tipoWrite == "Write") {
-                    Console.Write(texto);
+                if (getContenido() == "+") {
+                    Concatenaciones(texto, tipoWrite);
                 } else {
-                    Console.WriteLine(texto);
+                    match(")");
+                    match(";");
+
+                    if (tipoWrite == "Write") {
+                        Console.Write(texto);
+                    } else {
+                        Console.WriteLine(texto);
+                    }
                 }
             }
         }
@@ -321,8 +346,18 @@ namespace Sintaxis_1 {
         //MasTermino -> (OperadorTermino Termino)?
         private void MasTermino() {
             if (getClasificacion() == Tipos.OperadorTermino) {
+                String operador = getContenido();
                 match(Tipos.OperadorTermino);
                 Termino();
+                Console.Write(operador + " ");
+
+                float n1 = s.Pop();
+                float n2 = s.Pop();
+
+                switch (operador) {
+                    case "+": s.Push(n2 + n1); break;
+                    case "-": s.Push(n2 - n1); break;
+                }
             }
         }
         
@@ -335,21 +370,63 @@ namespace Sintaxis_1 {
         //PorFactor -> (OperadorFactor Factor)?
         private void PorFactor() {
             if (getClasificacion() == Tipos.OperadorFactor) {
+                String operador = getContenido();
                 match(Tipos.OperadorFactor);
                 Factor();
+                Console.Write(operador + " ");
+
+                float n1 = s.Pop();
+                float n2 = s.Pop();
+
+                switch (operador) {
+                    case "*": s.Push(n2 * n1); break;
+                    case "/": s.Push(n2 / n1); break;
+                    case "%": s.Push(n2 % n1); break;
+                }
             }
         }
         
         //Factor -> numero | identificador | (Expresion)
         private void Factor() {
             if (getClasificacion() == Tipos.Numero) {
+                s.Push(float.Parse(getContenido()));
+                Console.Write(getContenido() + " ");
                 match(Tipos.Numero);
             } else if (getClasificacion() == Tipos.Identificador) {
+                s.Push(0);
+                Console.Write(getContenido() + " ");
                 match(Tipos.Identificador);
             } else {
                 match("(");
                 Expresion();
                 match(")");
+            }
+        }
+
+        //Concatenaciones -> Identificador | cadena (+ Concatenaciones)?                
+                                          // sin comillas
+        private void Concatenaciones(String texto, String tipo) {
+            match("+");
+
+            texto += getContenido().Trim('"');
+
+            if (getClasificacion() == Tipos.Cadena) {
+                match(Tipos.Cadena);
+            } else {
+                match(Tipos.Identificador);
+            }
+            
+            if (getContenido() == "+") {
+                Concatenaciones(texto, tipo);
+            } else {
+                match(")");
+                match(";");
+
+                if (tipo == "Write") {
+                    Console.Write(texto);
+                } else {
+                    Console.WriteLine(texto);
+                }
             }
         }
     }

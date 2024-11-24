@@ -271,7 +271,7 @@ namespace Sintaxis_1 {
                 }
             }    
             if (!finArchivo()) {
-                log.WriteLine("{0}  °°°°  {1}",  getContenido(),  getClasificacion());
+                //log.WriteLine("{0}  °°°°  {1}",  getContenido(),  getClasificacion());
             }
         }
         public bool finArchivo() {
