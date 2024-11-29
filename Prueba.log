@@ -1,33 +1,8 @@
 Programa: Prueba.cpp
-Fecha: 24/11/2024
-Hora: 15:49
-static  °°°°  Identificador
-void  °°°°  Identificador
-Main  °°°°  Identificador
-(  °°°°  Caracter
-string  °°°°  Identificador
-[  °°°°  Caracter
-]  °°°°  Caracter
-args  °°°°  Identificador
-)  °°°°  Caracter
-{  °°°°  InicioBloque
-Console  °°°°  Identificador
-.  °°°°  Caracter
-Write  °°°°  Identificador
-(  °°°°  Caracter
-" hola "  °°°°  Cadena
-+  °°°°  OperadorTermino
-B  °°°°  Identificador
-+  °°°°  OperadorTermino
-"hola"  °°°°  Cadena
-+  °°°°  OperadorTermino
-a  °°°°  Identificador
-+  °°°°  OperadorTermino
-c  °°°°  Identificador
-+  °°°°  OperadorTermino
-d  °°°°  Identificador
-)  °°°°  Caracter
-;  °°°°  FinSentencia
-}  °°°°  FinBloque
+Fecha: 29/11/2024
+Hora: 15:5
 Lista de variables
-Total de lineas 4
+Int  a  61
+Int  b  5
+Int  c  1
+Total de lineas 28

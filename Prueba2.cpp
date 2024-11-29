@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 static void Main(string[] args) {
-    int a = 4, b = Console.ReadLine();
+    int a, b;
     a = (3 + 5) * 8 - (10 - 4) / 2; // 61
 
     int c = 0;
@@ -12,16 +12,16 @@ static void Main(string[] args) {
     c++;
     c /= 2;
 
-    if (a + 10 == 70)
+    if (a + 9 == 70)
     {
         Console.WriteLine("Es verdadero");
         if (b == 2)
         {
             Console.WriteLine("b es igual a 2");
 
-            if (a > 3)
+            if (b > 3)
             {
-                Console.WriteLine("a es mayor a 3");
+                Console.WriteLine("b es mayor a 3");
             }
         }
     }
