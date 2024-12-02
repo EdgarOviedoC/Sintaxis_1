@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Formats.Asn1;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.Marshalling;
 using System.Threading.Tasks;
 
 /*
@@ -273,6 +274,11 @@ namespace Sintaxis_1 {
                         Expresion();
                         nuevoValor = v.getValor() / s.Pop();
                         break;
+                    case "%=": 
+                        match(Tipos.IncrementoFactor);
+                        Expresion();
+                        nuevoValor = v.getValor() / s.Pop();
+                        break;
                 }
             }
             v.setValor(nuevoValor);
@@ -406,7 +412,7 @@ namespace Sintaxis_1 {
                 }
 
                 if (getContenido() == "+") {
-                    Concatenaciones(texto, tipo);
+                    Concatenaciones(texto, tipo, ejecuta);
                 } else {
                     match(")");
                     match(";");
@@ -508,7 +514,7 @@ namespace Sintaxis_1 {
 
         //Concatenaciones -> Identificador | cadena (+ Concatenaciones)?                
                                           // sin comillas
-        private void Concatenaciones(String texto, bool tipo) {
+        private void Concatenaciones(String texto, bool tipo, bool ejecuta) {
             match("+");
 
             texto += getContenido().Trim('"');
@@ -520,15 +526,16 @@ namespace Sintaxis_1 {
             }
             
             if (getContenido() == "+") {
-                Concatenaciones(texto, tipo);
+                Concatenaciones(texto, tipo, ejecuta);
             } else {
                 match(")");
                 match(";");
-
-                if (tipo) {
-                    Console.Write(texto);
-                } else {
-                    Console.WriteLine(texto);
+                if (ejecuta) {
+                    if (tipo) {
+                        Console.Write(texto);
+                    } else {
+                        Console.WriteLine(texto);
+                    }
                 }
             }
         }
